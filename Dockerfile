@@ -12,4 +12,4 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/cfsmtp .
 EXPOSE 8080
-CMD ["./server"]
+CMD ["./cfsmtp"]
