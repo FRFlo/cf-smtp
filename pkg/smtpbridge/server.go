@@ -46,7 +46,12 @@ func (s *Server) Serve(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("listen on %s: %w", s.config.ListenAddr, err)
 	}
-	defer listener.Close()
+	defer func(listener net.Listener) {
+		err := listener.Close()
+		if err != nil {
+			s.logger.Error().Err(err).Msg("error closing listener")
+		}
+	}(listener)
 
 	backend := &backend{parentCtx: ctx, server: s}
 	smtpServer := gosmtp.NewServer(backend)
