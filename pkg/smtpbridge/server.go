@@ -165,10 +165,12 @@ func (s *session) Data(r io.Reader) error {
 		s.server.logger.Warn().Int("bounced_count", len(result.PermanentBounces)).Msg("cloudflare rejected all recipients")
 		return smtpError(550, 5, 1, 1, "Cloudflare permanently rejected all recipients")
 	}
-	if len(result.Delivered) == 0 && len(result.Queued) == 0 && len(result.PermanentBounces) == 0 {
-		s.server.logger.Warn().Int("recipient_count", len(s.recipients)).Msg("cloudflare send returned no delivery outcome")
-		return smtpError(451, 4, 4, 0, "Cloudflare email send produced no delivery outcome")
-	}
+
+	// Cloudflare don't return Delivered when it's succesful, idk why.
+	//if len(result.Delivered) == 0 && len(result.Queued) == 0 && len(result.PermanentBounces) == 0 {
+	//	s.server.logger.Warn().Int("recipient_count", len(s.recipients)).Msg("cloudflare send returned no delivery outcome")
+	//	return smtpError(451, 4, 4, 0, "Cloudflare email send produced no delivery outcome")
+	//}
 
 	s.server.logger.Info().Int("delivered", len(result.Delivered)).Int("queued", len(result.Queued)).Int("bounced", len(result.PermanentBounces)).Msg("cloudflare accepted message")
 	return nil
